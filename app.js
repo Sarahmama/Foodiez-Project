@@ -3,11 +3,17 @@ const express = require("express");
 const app = express();
 const connectDb = require("./database");
 const authRoutes = require("./apis/auth/auth.router");
+
+
+
+const recipeRoutes = require("./apis/recipes/recipes.router");
 const ingredients = require("./apis/ingredients/ingred.router");
 
 app.use(express.json());
 app.use("/auth", authRoutes);
+app.use("/recipes", recipeRoutes);
 app.use("/ingredient", ingredients);
+
 
 connectDb();
 
