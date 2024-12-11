@@ -1,9 +1,20 @@
 const express = require("express");
 const router = express.Router();
+const multer = require("multer");
+
+const storage = multer.diskStorage({
+  destination: "./media",
+  filename: (req, file, cb) => {
+    cb(null, `${+new Date()}${file.originalname}`);
+  },
+});
+const upload = multer({
+  storage,
+});
 
 const {
   getAllRecipes,
-  getRecipeById,
+  getRecipeByName,
   createRecipe,
   recipeUpdate,
   deleteRecipe,
@@ -11,12 +22,12 @@ const {
 
 router.get("/", getAllRecipes);
 
-router.get("/:id", getRecipeById);
+router.get("/:name", getRecipeByName);
 
-router.post("/", createRecipe);
+router.post("/", upload.single("image"), createRecipe);
 
-router.put("/:id", recipeUpdate);
+router.put("/:recipeId", upload.single("image"), recipeUpdate);
 
-router.delete("/:id", deleteRecipe);
+router.delete("/:recipeId", deleteRecipe);
 
 module.exports = router;
