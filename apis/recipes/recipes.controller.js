@@ -9,10 +9,10 @@ exports.getAllRecipes = async (req, res) => {
   }
 };
 
-exports.getRecipeById = async (req, res) => {
-  const { recipeId } = req.params;
+exports.getRecipeByName = async (req, res) => {
+  const { name } = req.params;
   try {
-    const recipe = await Recipe.findById(recipeId).select(
+    const recipe = await Recipe.find({ name: name }).select(
       "-createdAt -updatedAt"
     );
     if (recipe) {
@@ -27,6 +27,9 @@ exports.getRecipeById = async (req, res) => {
 
 exports.createRecipe = async (req, res) => {
   try {
+    if (req.file) {
+      req.body.image = `http://localhost:8000/media/${req.file.filename}`;
+    }
     const newRecipe = await Recipe.create(req.body);
     return res.status(201).json(newRecipe);
   } catch (error) {
@@ -52,6 +55,9 @@ exports.deleteRecipe = async (req, res) => {
 exports.recipeUpdate = async (req, res) => {
   const { recipeId } = req.params;
   try {
+    if (req.file) {
+      req.body.image = `http://localhost:8000/media/${req.file.filename}`;
+    }
     const foundRecipes = await Recipe.findById(recipeId);
     if (foundRecipes) {
       await foundRecipes.updateOne(req.body);
