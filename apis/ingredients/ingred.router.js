@@ -1,23 +1,31 @@
-const express = require('express');
+const express = require("express");
 const {
-    ingredCreate,
-    ingredGet,
-    ingredGetById,
-    ingredUpdate,
-    ingredDelete
-} = require('../ingredients/ingred.controller');
+  ingredCreate,
+  ingredGet,
+  ingredGetById,
+  ingredUpdate,
+  ingredDelete,
+} = require("../ingredients/ingred.controller");
+const multer = require("multer");
+const storage = multer.diskStorage({
+  destination: "./media",
+  filename: (req, file, cb) => {
+    cb(null, `${+new Date()}${file.originalname}`);
+  },
+});
+const upload = multer({
+  storage,
+});
 const router = express.Router();
 
+router.post("/", upload.single("image"), ingredCreate);
 
+router.get("/", ingredGet);
 
-router.post('/', ingredCreate);
+router.get("/:ingredId", ingredGetById);
 
-router.get('/', ingredGet);
+router.put("/:ingredId", upload.single("image"), ingredUpdate);
 
-router.get('/:ingredId', ingredGetById);
-
-router.put('/:ingredId', ingredUpdate);
-
-router.delete('/:ingredId', ingredDelete);
+router.delete("/:ingredId", ingredDelete);
 
 module.exports = router;
