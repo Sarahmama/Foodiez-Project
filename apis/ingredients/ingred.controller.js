@@ -3,8 +3,10 @@ const Ingred = require("../../models/Ingredients");
 exports.ingredCreate = async (req, res) => {
   try {
     if (req.file) {
-      req.body.image = `http://localhost:8000/media/${req.file.filename}`;
-    }
+
+        req.body.image = `http://localhost:8000/media/${req.file.filename}`;
+      }
+
     const newIngred = await Ingred.create(req.body);
     res.status(201).json(newIngred);
   } catch (error) {
@@ -21,11 +23,11 @@ exports.ingredGet = async (req, res) => {
   }
 };
 
-exports.ingredGetById = async (req, res) => {
-  const { ingredId } = req.params;
+exports.ingredGetByName = async (req, res) => {
+  const { ingredName } = req.params;
 
   try {
-    const foundIngredient = await Ingred.findById(ingredId);
+    const foundIngredient = await Ingred.find({ name: ingredName });
 
     if (!foundIngredient) {
       return res.status(404).json({ message: "Ingredient not found" });
@@ -42,8 +44,9 @@ exports.ingredUpdate = async (req, res) => {
 
   try {
     if (req.file) {
-      req.body.image = `http://localhost:8000/media/${req.file.filename}`;
-    }
+
+        req.body.image = `http://localhost:8000/media/${req.file.filename}`;
+      }
     const updatedIngredient = await Ingred.findByIdAndUpdate(
       ingredId,
       req.body,

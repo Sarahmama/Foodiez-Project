@@ -20,6 +20,7 @@ const router = express.Router();
 
 router.post("/", upload.single("image"), ingredCreate);
 
+
 router.get("/", ingredGet);
 
 router.get("/:ingredId", ingredGetById);
@@ -27,5 +28,6 @@ router.get("/:ingredId", ingredGetById);
 router.put("/:ingredId", upload.single("image"), ingredUpdate);
 
 router.delete("/:ingredId", ingredDelete);
+
 
 module.exports = router;
