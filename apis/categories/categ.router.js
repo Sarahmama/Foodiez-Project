@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-
+const passport = require("passport");
 const storage = multer.diskStorage({
   destination: "./media",
   filename: (req, file, cb) => {
@@ -21,10 +21,24 @@ const {
 
 router.get("/", categoriesGet);
 router.get("/:name", getCategoryByName);
-router.post("/", upload.single("image"), categoryCreate);
+router.post(
+  "/",
+  upload.single("image"),
+  passport.authenticate("jwt", { session: false }),
+  categoryCreate
+);
 
-router.delete("/:categoryId", categoryDelete);
+router.delete(
+  "/:categoryId",
+  passport.authenticate("jwt", { session: false }),
+  categoryDelete
+);
 
-router.put("/:categoryId", upload.single("image"), categoryUpdate);
+router.put(
+  "/:categoryId",
+  upload.single("image"),
+  passport.authenticate("jwt", { session: false }),
+  categoryUpdate
+);
 
 module.exports = router;

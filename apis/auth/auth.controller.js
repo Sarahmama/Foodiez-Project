@@ -1,65 +1,45 @@
-const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 const User = require("../../models/User");
+const jwt = require("jsonwebtoken");
+const { JWT_SECRET, JWT_EXPIRATION_MS } = require("../../key");
 
-exports.signup = async (req, res) => {
+exports.registerUser = async (req, res) => {
+  const saltRounds = 10;
+  req.body.password = await bcrypt.hash(req.body.password, saltRounds);
+
   try {
-    const { username, email, password, confirmPassword } = req.body;
-
-    // Validate password match
-    if (password !== confirmPassword) {
-      return res.status(400).json({ message: "Passwords do not match" });
-    }
-
-    // Check if username already exists
-    const existingUser = await User.findOne({ username });
-    if (existingUser) {
-      return res.status(409).json({ message: "Username already taken" });
-    }
-
-    // Create a new user
-    const newUser = new User({ username, email, password });
-    await newUser.save();
-
-    // Generate a JWT token
-    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
-
-    res.status(201).json({ token });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: error.message });
+    const user = User(req.body);
+    await user.save();
+    const payload = {
+      id: user.id,
+      name: user.username,
+      exp: Date.now() + JWT_EXPIRATION_MS,
+    };
+    const token = jwt.sign(JSON.stringify(payload), JWT_SECRET);
+    res.status(201).json({ token: token });
+  } catch (e) {
+    console.log(e.message);
+    res.status(400).json(e.message);
   }
 };
 
-exports.login = async (req, res) => {
-  try {
-    const { username, password } = req.body;
-
-    // Find user by username
-    const user = await User.findOne({ username });
-    if (!user) {
-      console.error("User not found");
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-    console.log(username);
-    // Validate password
-    console.log(user, "user");
-    const isPasswordValid = await user.comparePassword(password);
-    console.log("Password Valid:", isPasswordValid);
-
-    if (!isPasswordValid) {
-      console.error("Invalid Password");
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-
-    // Generate JWT token
-    const JWT_SECRET = process.env.JWT_SECRET || "default_secret_key";
-    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "1h" });
-
-    res.status(200).json({ token });
-  } catch (error) {
-    console.error("Login Error:", error);
-    res.status(500).json({ message: "An error occurred during login" });
+exports.logoutUser = async (req, res) => {
+  const users = await User.find({ session: `${req.body.token}` });
+  if (users.length > 0) {
+    const user = users[0];
+    user.session = null;
+    await user.save();
   }
+  res.status(200).json();
+};
+
+exports.loginUser = async (req, res) => {
+  const { user } = req;
+  const payload = {
+    id: user.id,
+    username: user.name,
+    exp: Date.now() + parseInt(JWT_EXPIRATION_MS),
+  };
+  const token = jwt.sign(JSON.stringify(payload), JWT_SECRET);
+  res.json({ token });
 };
