@@ -2,19 +2,23 @@ const Recipe = require("../../models/Recipes");
 
 exports.getAllRecipes = async (req, res) => {
   try {
-    const recipes = await Recipe.find().select("-createdAt -updatedAt");
+    const recipes = await Recipe.find()
+      .select("-createdAt -updatedAt")
+      .populate("category")
+      .populate("ingredients");
     return res.json(recipes);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
 
-exports.getRecipeByName = async (req, res) => {
-  const { name } = req.params;
+exports.getRecipeByCategory = async (req, res) => {
+  const { categoryId } = req.params;
   try {
-    const recipe = await Recipe.find({ name: name }).select(
-      "-createdAt -updatedAt"
-    );
+    const recipe = await Recipe.find({ category: categoryId })
+      .select("-createdAt -updatedAt")
+      .populate("category")
+      .populate("ingredients");
     if (recipe) {
       return res.json(recipe);
     } else {

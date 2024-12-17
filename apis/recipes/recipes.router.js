@@ -14,7 +14,7 @@ const upload = multer({
 
 const {
   getAllRecipes,
-  getRecipeByName,
+  getRecipeByCategory,
   createRecipe,
   recipeUpdate,
   deleteRecipe,
@@ -22,7 +22,7 @@ const {
 
 router.get("/", getAllRecipes);
 
-router.get("/:name", getRecipeByName);
+router.get("/:categoryId", getRecipeByCategory);
 
 router.post("/", upload.single("image"), createRecipe);
 

@@ -46,7 +46,7 @@ exports.categoryUpdate = async (req, res) => {
 };
 exports.categoriesGet = async (req, res) => {
   try {
-    const categories = await Categories.find();
+    const categories = await Categories.find().populate("recipes");
     res.json(categories);
   } catch (error) {
     res.status(500).json({ error: error.message });
