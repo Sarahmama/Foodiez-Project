@@ -1,12 +1,13 @@
 const express = require("express");
+const router = express.Router();
+const multer = require("multer");
 const {
   ingredCreate,
   ingredGet,
-  ingredGetById,
+  ingredGetByName,
   ingredUpdate,
   ingredDelete,
 } = require("../ingredients/ingred.controller");
-const multer = require("multer");
 const storage = multer.diskStorage({
   destination: "./media",
   filename: (req, file, cb) => {
@@ -16,18 +17,15 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage,
 });
-const router = express.Router();
 
-router.post("/", upload.single("image"), ingredCreate);
-
+router.post("/", ingredCreate);
 
 router.get("/", ingredGet);
 
-router.get("/:ingredId", ingredGetById);
+router.get("/:ingredName", ingredGetByName);
 
-router.put("/:ingredId", upload.single("image"), ingredUpdate);
+router.put("/:ingredId", ingredUpdate);
 
 router.delete("/:ingredId", ingredDelete);
-
 
 module.exports = router;
