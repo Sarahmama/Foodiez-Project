@@ -1,8 +1,11 @@
 require("dotenv").config();
 const express = require("express");
 const passport = require("passport");
+const cors = require("cors");
 
 const app = express();
+app.use(cors());
+
 const connectDb = require("./database");
 const { localStrategy, jwtStrategy } = require("./passport");
 const authRoutes = require("./apis/auth/auth.router");
