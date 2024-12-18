@@ -3,8 +3,10 @@ const Ingred = require("../../models/Ingredients");
 exports.ingredCreate = async (req, res) => {
   try {
     if (req.file) {
+
         req.body.image = `http://localhost:8000/media/${req.file.filename}`;
       }
+
     const newIngred = await Ingred.create(req.body);
     res.status(201).json(newIngred);
   } catch (error) {
@@ -42,6 +44,7 @@ exports.ingredUpdate = async (req, res) => {
 
   try {
     if (req.file) {
+
         req.body.image = `http://localhost:8000/media/${req.file.filename}`;
       }
     const updatedIngredient = await Ingred.findByIdAndUpdate(

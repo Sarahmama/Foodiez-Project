@@ -5,6 +5,7 @@ const IngredSchema = new Schema({
     type: String,
     default: null,
   },
+
   image: {
     type: String,
     requierd: true,
