@@ -41,7 +41,9 @@ exports.categoryUpdate = async (req, res) => {
       res.status(404).json("this category doesn't exist");
     }
   } catch (error) {
-    res.status(500).json({ errror: "category not found" });
+    res
+      .status(500)
+      .json({ error: "category not found", message: error.message });
   }
 };
 exports.categoriesGet = async (req, res) => {
